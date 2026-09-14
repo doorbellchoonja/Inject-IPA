@@ -1,4 +1,5 @@
 name: Inject Tweak to IPA
+
 on:
   workflow_dispatch:
     inputs:
@@ -38,28 +39,11 @@ jobs:
 
       - name: Create Output Directory and Inject
         run: |
-          mkdir -p "$GITHUB_WORKSPACE/output"
-          azule -i original.ipa -O "$GITHUB_WORKSPACE/output" -o patched.ipa -f tweak.dylib
+          mkdir -p output
+          azule -i original.ipa -O output -o patched.ipa -f tweak.dylib
 
       - name: Upload Finished IPA
         uses: actions/upload-artifact@v4
         with:
-          name: Patched-A-Dance-of-Fire-and-Ice
-          path: ${{ github.workspace }}/output/patched.ipa
-          curl -L "${{ github.event.inputs.dylib_url }}" -o tweak.dylib
-
-      - name: Inject Tweak into IPA
-        run: |
-          azule -i original.ipa -o "$GITHUB_WORKSPACE/patched.ipa" -f tweak.dylib
-
-      - name: Upload Finished IPA
-        uses: actions/upload-artifact@v4
-        with:
-          name: Patched-A-Dance-of-Fire-and-Ice
-          path: patched.ipa
-
-      - name: Upload Finished IPA
-        uses: actions/upload-artifact@v4
-        with:
-          name: Patched-A-Dance-of-Fire-and-Ice
-          path: patched.ipa
+          name: Patched-IPA-File
+          path: output/patched.ipa
