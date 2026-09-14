@@ -6,34 +6,39 @@ on:
       ipa_url:
         description: 'IPA 다운로드 주소 입력'
         required: true
-        default: 'https://dl.iosvizor.net/a-dance-of-fire-and-ice/A-Dance-of-Fire-and-Ice-v2-9-7.ipa'
+        default: 'https://iosvizor.net'
       dylib_url:
         description: 'DYLIB 도구 주소 입력'
         required: true
-        default: 'https://githubusercontent.com'
+        default: 'https://raw.githubusercontent.com/test1ng-guy/iOS-sandbox-explorer/refs/heads/main/libShell.dylib'
 
 jobs:
   build:
     runs-on: macos-latest
     steps:
-      - name: Checkout target template
+      - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          repository: 'missuo/Inject-IPA'
 
-      - name: Setup Azule Tool
-        uses: actions/checkout@v4
-        with:
-          repository: 'Al4ise/Azule'
-          path: 'Azule-Source'
-
-      - name: Install System Dependencies
+      - name: Install Python and System Dependencies
         run: |
           brew install ldid dpkg
-          sudo ln -sf "$GITHUB_WORKSPACE/Azule-Source/azule" /usr/local/bin/azule
+          python3 -m pip install --upgrade pip
+          python3 -m pip install pyzule-rw
 
-      - name: Download Game and Tweak
+      - name: Download Game and Tweak Files
         run: |
+          curl -L "${{ github.event.inputs.ipa_url }}" -o original.ipa
+          curl -L "${{ github.event.inputs.dylib_url }}" -o tweak.dylib
+
+      - name: Safe Inject Tweak
+        run: |
+          pyzule -i original.ipa -o completed.ipa -f tweak.dylib
+
+      - name: Upload Finished IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: Patched-IPA-File
+          path: completed.ipa
           curl -L "${{ github.event.inputs.ipa_url }}" -o original.ipa
           curl -L "${{ github.event.inputs.dylib_url }}" -o tweak.dylib
 
