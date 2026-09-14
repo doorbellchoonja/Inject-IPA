@@ -1,0 +1,42 @@
+name: Inject Tweak to IPA
+on:
+  workflow_dispatch:
+    inputs:
+      ipa_url:
+        description: 'IPA 다운로드 주소 입력'
+        required: true
+        default: 'https://iosvizor.net'
+      dylib_url:
+        description: 'DYLIB 도구 주소 입력'
+        required: true
+        default: 'https://github.com'
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: 'missuo/Inject-IPA'
+
+      - name: Setup Azule
+        run: |
+          brew install ldid dpkg
+          git clone https://github.com ~/Azule
+          sudo ln -sf ~/Azule/azule /usr/local/bin/azule
+
+      - name: Download Files
+        run: |
+          curl -L "${{ github.event.inputs.ipa_url }}" -o original.ipa
+          curl -L "${{ github.event.inputs.dylib_url }}" -o tweak.dylib
+
+      - name: Inject Dylib
+        run: |
+          azule -i original.ipa -o patched.ipa -f tweak.dylib
+
+      - name: Upload Finished IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: Patched-A-Dance-of-Fire-and-Ice
+          path: patched.ipa
