@@ -23,7 +23,7 @@ jobs:
       - name: Setup Azule
         run: |
           brew install ldid dpkg
-          git clone https://github.com ~/Azule
+          git clone --depth 1 https://github.com ~/Azule
           sudo ln -sf ~/Azule/azule /usr/local/bin/azule
 
       - name: Download Files
