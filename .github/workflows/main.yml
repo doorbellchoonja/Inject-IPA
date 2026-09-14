@@ -10,7 +10,7 @@ on:
       dylib_url:
         description: 'DYLIB 도구 주소 입력'
         required: true
-        default: 'https://raw.githubusercontent.com/test1ng-guy/iOS-sandbox-explorer/refs/heads/main/libShell.dylib'
+        default: 'https://githubusercontent.com'
 
 jobs:
   build:
@@ -37,13 +37,12 @@ jobs:
           curl -L "${{ github.event.inputs.ipa_url }}" -o original.ipa
           curl -L "${{ github.event.inputs.dylib_url }}" -o tweak.dylib
 
-      - name: Create Output Directory and Inject
+      - name: Inject Tweak into IPA
         run: |
-          mkdir -p output
-          azule -i original.ipa -O output -o patched.ipa -f tweak.dylib
+          azule -i original.ipa -o patched.ipa -f tweak.dylib
 
       - name: Upload Finished IPA
         uses: actions/upload-artifact@v4
         with:
           name: Patched-IPA-File
-          path: output/patched.ipa
+          path: patched.ipa
