@@ -38,7 +38,7 @@ jobs:
 
       - name: Inject Tweak into IPA
         run: |
-          azule -i original.ipa -o patched.ipa -f tweak.dylib
+          azule -i original.ipa -o "$GITHUB_WORKSPACE/patched.ipa" -f tweak.dylib
 
       - name: Upload Finished IPA
         uses: actions/upload-artifact@v4
